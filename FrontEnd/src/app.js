@@ -50,12 +50,24 @@ app.delete("/user", async(req, res) => {
     }
 })
 
-app.patch("/user", async(req, res) => {
-    const userId = req.body.id;
+app.patch("/user/:userId", async(req, res) => {
+    const userId = req.params?.userId;
     const field = req.body;
+    const ALLOWED_FIELDS = [
+        "password", "photoUrl", "about", "skills"
+    ]
+    
+    const isAllowed = Object.keys(field).every((keyitem) => ALLOWED_FIELDS.includes(keyitem))
 
     const updateUser = await User.findByIdAndUpdate(userId, field);
     try {
+        // here implementing some more checks for safety of database
+        if (!isAllowed){
+            throw new Error("Update is not allowed for given field")
+        }
+
+        if (field.skills.length > 20) throw new Error("skills can't be more than 20")
+            
         res.send("User updated successfully...")
     } catch (error) {
         res.status(400).send("Something went wrong while updating the user!!!")
