@@ -4,7 +4,7 @@ const validator = require("validator")
 const userSchema = new mongoose.Schema({
     firstName : {
         type: String,
-        require: true,
+        required: true,
         maxLength : 20
     },
     lastName: {
@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
         lowercase: true,
         trime: true,
@@ -22,14 +22,14 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        require: true,
+        required: true,
         validate(value){
-            if (!validator.isEmailisStrongPassword(value)) throw new Error("Enter Strong Password")
+            if (!validator.isStrongPassword(value)) throw new Error("Enter Strong Password")
         }
     },
     age: {
         type: Number,
-        require: true,
+        required: true,
         validate(value){
             if (value < 18){
                 throw new Error("Not eligible for this platform")
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        require: true,
+        required: true,
         enum: ["male", "female", "trans"]
     },
     photoUrl: {

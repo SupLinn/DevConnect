@@ -1,0 +1,60 @@
+const express = require("express")
+const User = require("../models/user")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+const {validateUserSignup} = require("../util/validate")
+
+const authRouter = express.Router()
+
+authRouter.post("/login", async(req, res) => {
+    try {
+        const {email, password} = req.body;
+        // first we will be verifying email and then check for the password
+        const user = await User.findOne({email: email})
+        if(!user) throw new Error("Invalid Credentials!!!")
+
+        // now check for the password
+        const isPassword = await bcrypt.compare(password, user.password)
+        if (!isPassword){
+            throw new Error ("Invalid Credentials!!!")
+        }
+        else{
+            // sending jwt token into cookies
+            const token = await jwt.sign({Id: user._id}, "SEC$08PASS")
+            res.cookie("tokenName", token)
+
+            res.send("LoggedIn Successfully") 
+        }
+        
+    } catch (error) {
+        res.status(400).send("ERROR : " + error.message);
+    }
+})
+
+authRouter.post("/signup", async (req, res) => {
+    // dont take direct data from req.body as it is not safe
+    try {
+        validateUserSignup(req);
+
+        const {firstName, lastName, email, password, age, gender, skills} = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const dummyUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            age,
+            gender,
+            skills
+        })
+
+        await dummyUser.save();
+        res.send("User saved successfully...")
+    } catch (error) {
+        res.status(400).send("User not saved!!! "+ error.message);
+    }
+})
+
+module.exports = authRouter
