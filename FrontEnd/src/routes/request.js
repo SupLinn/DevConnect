@@ -29,7 +29,7 @@ requestRouter.post("/request/send/:status/:userId", UserAuth, async(req, res) =>
             })
         }
         // if interested connection is present between A and B then send interested connection req should not be possible 
-        const existingConnectionRequest = ConnectionReqModel.findOne({
+        const existingConnectionRequest = await ConnectionReqModel.findOne({
             $or: [
                 {
                     fromUserId : senderUserId,
@@ -60,6 +60,46 @@ requestRouter.post("/request/send/:status/:userId", UserAuth, async(req, res) =>
     } catch (error) {
         res.status(400).send("Error: "+ error.message)
     }
+})
+
+requestRouter.patch("/request/review/:status/:requestId", UserAuth, async(req, res) => {
+    // take the loggedIn user from the userAuth req
+    // validation required on satus and requestId (anything which comes from the req.body or the url validation is required)
+    try {
+        const {status, requestId} = req.params;
+    
+        const loggedInUser = req.userProfile;
+        const allowedStatus = ["accepted", "rejected"]
+        if (!allowedStatus.includes(status)) {
+            res.status(400).json({
+                message: "Invalid status request!!!"
+            })
+        }
+    
+        // now comes db query
+    
+        const validateRequest = await ConnectionReqModel.findOne({
+            _id : requestId,
+            toUserId : loggedInUser._id,
+            status : "interested"
+        })
+        // console.log (validateRequest)
+    
+        if (!validateRequest){
+            res.status(404).json({
+                message: "No request found!!!",
+            })
+        }
+        validateRequest.status = status
+        const data = await validateRequest.save();
+        res.status(200).json ({
+            message: "Connection request "+status,
+            data
+        })
+    } catch (error) {
+        res.status(400).send("Error: "+ error);
+    }
+    
 })
 
 
