@@ -23,7 +23,7 @@ authRouter.post("/login", async(req, res) => {
             const token = await jwt.sign({Id: user._id}, "SEC$08PASS")
             res.cookie("tokenName", token)
 
-            res.send("LoggedIn Successfully") 
+            res.send(user) 
         }
         
     } catch (error) {
