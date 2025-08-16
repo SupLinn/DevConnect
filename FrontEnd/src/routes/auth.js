@@ -11,12 +11,14 @@ authRouter.post("/login", async(req, res) => {
         const {email, password} = req.body;
         // first we will be verifying email and then check for the password
         const user = await User.findOne({email: email})
-        if(!user) throw new Error("Invalid Credentials!!!")
+        if(!user){
+            return res.status(400).send("ERROR: Invalid Credentials!!!")
+        } 
 
         // now check for the password
         const isPassword = await bcrypt.compare(password, user.password)
         if (!isPassword){
-            throw new Error ("Invalid Credentials!!!")
+            return res.status(400).send("ERROR: Invalid Credentials!!!")
         }
         else{
             // sending jwt token into cookies

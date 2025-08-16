@@ -6,10 +6,11 @@ import { useNavigate } from 'react-router';
 import { BASE_URL } from '../utils/constants';
 
 const Login = () => {
-  const [email, setEmail]  = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail]  = useState("sushil@gmail.com");
+  const [password, setPassword] = useState("Sushil@123");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const loginHandler = async() => {
     try {
@@ -17,10 +18,13 @@ const Login = () => {
         email,
         password
       },{withCredentials: true})
+      
       dispatch(addUser(result.data))
       return navigate("/")
+
     } catch (error) {
-      console.log(error.message);
+      setError(error?.response?.data || "Something went wrong!!!");
+      
     }
   }
 
@@ -74,6 +78,11 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
+          {/* logic for invalid credentials */}
+
+          <p className="text-red-500">{error}</p>
+
+
           <p className="validator-hint hidden">
             Must be more than 8 characters, including
             <br />At least one number <br />At least one lowercase letter <br />At least one uppercase letter
