@@ -78,8 +78,6 @@ const Connections = () => {
                         )}
                       </div>
                     </div>
-                    {/* Online indicator */}
-                    <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-800"></div>
                   </div>
 
                   {/* Profile Details */}
