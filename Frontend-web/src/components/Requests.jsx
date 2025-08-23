@@ -55,7 +55,7 @@ const Requests = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-300 p-6">
+        <div className="min-h-screen bg-base-100 p-6">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
