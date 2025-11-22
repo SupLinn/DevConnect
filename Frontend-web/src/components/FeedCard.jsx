@@ -11,7 +11,8 @@ const FeedCard = ({user}) => {
 
     const HandleSendRequest = async (state, userId) => {
         try{
-            const result = await axios.post(BASE_URL+ "/request/send/" + state + "/" + userId, {}, {withCredentials: true} )
+            const result = await axios.post(BASE_URL+ "/request/send/" + state + "/" + userId, {}, {withCredentials: true} );
+            console.log(result.data);
 
             dispatch(removeFromUserFeed(userId))
         } catch (err) {

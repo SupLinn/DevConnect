@@ -10,7 +10,7 @@ const UserAuth = async (req, res, next) => {
         }
     
         // now using this token to verify JWT secret
-        const decodeObj = await jwt.verify(tokenName, "SEC$08PASS");
+        const decodeObj = await jwt.verify(tokenName, process.env.JWT_SECRET);
     
         // getting _id from this decodeObj
         const {Id} = decodeObj
