@@ -14,313 +14,190 @@ const Login = () => {
   const [gender, setGender] = useState("")
   const [skills, setSkills] = useState("")
   const [isLogin, setIsLogin] = useState(true)
-  
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const loginHandler = async() => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Image: Minimalist, high-end dark abstract architecture.
+  const coverImageUrl = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop";
+
+  const handleSwitch = () => {
+    setIsLogin(!isLogin);
+    setError("");
+    if (isLogin) { 
+      setFirstName("");
+      setLastName("");
+      setAge("");
+      setGender("");
+      setSkills("");
+    }
+    setEmail("");
+    setPassword("");
+  }
+
+  const loginHandler = async (e) => {
+    e.preventDefault();
+    setError("");
     try {
-      const result = await axios.post(BASE_URL+"/login",{
-        email,
-        password
-      },{withCredentials: true})
-      
+      const result = await axios.post(BASE_URL + "/login", { email, password }, { withCredentials: true })
       dispatch(addUser(result.data))
       return navigate("/")
-
     } catch (error) {
       setError(error?.response?.data || "Something went wrong!!!");
-      
     }
   }
-  
-  const signUpHandler = async () => {
-    try {
-        const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill.length > 0);
-        
-        const result = await axios.post(BASE_URL+ "/signup", {
-          firstName,
-          lastName,
-          email,
-          password,
-          age: parseInt(age),
-          gender,
-          skills: skillsArray
-        }, {withCredentials: true})
 
-        dispatch(addUser(result.data.data))
-        navigate("/profile")
-        
+  const signUpHandler = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill.length > 0);
+      const result = await axios.post(BASE_URL + "/signup", {
+        firstName, lastName, email, password, age: parseInt(age), gender, skills: skillsArray
+      }, { withCredentials: true })
+      dispatch(addUser(result.data.data))
+      navigate("/profile")
     } catch (error) {
       setError(error?.response?.data || "Something went wrong!!!");
     }
   }
 
   return (
-    <div className="flex justify-center my-10">
-      <div className={`card bg-base-300 shadow-lg transition-all duration-300 ${isLogin ? 'w-96' : 'w-[600px]'}`}>
-        <div className="card-body p-8">
-          <h2 className="card-title text-3xl font-bold text-center mb-8 text-white">
-            {isLogin ? "Welcome Back" : "Join DevTinder"}
-          </h2>
+    <div className="min-h-screen flex bg-[#0B1120] font-sans text-slate-200">
+      
+      {/* 1. Left Side - Premium Hero Section */}
+      <div className="hidden lg:flex lg:w-[50%] relative overflow-hidden bg-slate-950">
+        <img 
+          src={coverImageUrl} 
+          alt="Abstract architecture" 
+          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay grayscale-[20%]"
+        />
+        {/* Stronger gradient for better text pop */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-[#0B1120]/60 to-transparent"></div>
+        
+        {/* REPLACED LOGO: Modern Typographic Brand */}
+        <div className="absolute top-10 left-10 z-20">
+           <h1 className="text-3xl font-bold text-white tracking-wide font-mono">
+              DevConnect<span className="text-blue-500">.</span>
+           </h1>
+        </div>
+
+        {/* Bottom Text */}
+        <div className="relative z-10 p-16 flex flex-col justify-end h-full">
+          <div className="mb-6 space-y-4">
+            <h2 className="text-5xl font-extrabold text-white leading-tight tracking-tight">
+              Scale your <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">network.</span>
+            </h2>
+            <p className="text-slate-400 text-lg font-light leading-relaxed max-w-md">
+              The premier platform for engineering talent to connect, collaborate, and build the future.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Right Side - Precision Form */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 md:p-12 overflow-y-auto bg-[#0B1120]">
+        <div className="w-full max-w-[380px] space-y-8">
           
-          <div className="space-y-6">
-            {/* Sign Up Only Fields */}
-            {!isLogin && (
-              <>
-                {/* Name Fields - Side by Side */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-gray-300 font-medium">First Name *</span>
-                    </label>
-                    <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                      <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                      <input 
-                        type="text" 
-                        placeholder="John" 
-                        required={!isLogin}
-                        value={firstName} 
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="grow bg-transparent text-white placeholder-gray-400"
-                      />
-                    </label>
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-gray-300 font-medium">Last Name</span>
-                    </label>
-                    <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                      <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                      <input 
-                        type="text" 
-                        placeholder="Doe" 
-                        value={lastName} 
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="grow bg-transparent text-white placeholder-gray-400"
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                {/* Age and Gender - Side by Side */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-gray-300 font-medium">Age *</span>
-                    </label>
-                    <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                      <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                      </svg>
-                      <input 
-                        type="number" 
-                        placeholder="25" 
-                        required={!isLogin}
-                        min="18"
-                        max="100"
-                        value={age} 
-                        onChange={(e) => setAge(e.target.value)}
-                        className="grow bg-transparent text-white placeholder-gray-400"
-                      />
-                    </label>
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-gray-300 font-medium">Gender *</span>
-                    </label>
-                    <select 
-                      className="select select-bordered bg-slate-700/50 border-slate-600 focus:border-blue-500 text-white transition-colors" 
-                      required={!isLogin}
-                      value={gender} 
-                      onChange={(e) => setGender(e.target.value)}
-                    >
-                      <option value="" disabled className="text-gray-400">Choose gender</option>
-                      <option value="male" className="bg-slate-800">Male</option>
-                      <option value="female" className="bg-slate-800">Female</option>
-                      <option value="trans" className="bg-slate-800">Trans</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Email - Full Width for Signup */}
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-300 font-medium">Email Address *</span>
-                  </label>
-                  <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                    <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <rect width="20" height="16" x="2" y="4" rx="2"/>
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                    </svg>
-                    <input 
-                      type="email" 
-                      placeholder="john@example.com" 
-                      required 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="grow bg-transparent text-white placeholder-gray-400"
-                    />
-                  </label>
-                </div>
-
-                {/* Password - Full Width for Signup */}
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-300 font-medium">Password *</span>
-                  </label>
-                  <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                    <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/>
-                      <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>
-                    </svg>
-                    <input
-                      type="password"
-                      required
-                      placeholder="Enter strong password"
-                      minLength="8"
-                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="grow bg-transparent text-white placeholder-gray-400"
-                    />
-                  </label>
-                  <label className="label">
-                    <span className="label-text-alt text-gray-400 text-xs">
-                      Must include uppercase, lowercase, number (8+ chars)
-                    </span>
-                  </label>
-                </div>
-
-                {/* Skills - Last Field */}
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-300 font-medium">Skills & Technologies *</span>
-                  </label>
-                  <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                    <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                    </svg>
-                    <input 
-                      type="text" 
-                      placeholder="React, Node.js, Python, JavaScript..." 
-                      required={!isLogin}
-                      value={skills} 
-                      onChange={(e) => setSkills(e.target.value)}
-                      className="grow bg-transparent text-white placeholder-gray-400"
-                    />
-                  </label>
-                  <label className="label">
-                    <span className="label-text-alt text-gray-400 text-xs">
-                      Separate multiple skills with commas
-                    </span>
-                  </label>
-                </div>
-              </>
-            )}
-
-            {/* Login Fields */}
-            {isLogin && (
-              <>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-300 font-medium">Email Address</span>
-                  </label>
-                  <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                    <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <rect width="20" height="16" x="2" y="4" rx="2"/>
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                    </svg>
-                    <input 
-                      type="email" 
-                      placeholder="john@example.com" 
-                      required 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="grow bg-transparent text-white placeholder-gray-400"
-                    />
-                  </label>
-                </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-300 font-medium">Password</span>
-                  </label>
-                  <label className="input input-bordered flex items-center gap-2 bg-slate-700/50 border-slate-600 focus-within:border-blue-500 transition-colors">
-                    <svg className="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/>
-                      <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>
-                    </svg>
-                    <input
-                      type="password"
-                      required
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="grow bg-transparent text-white placeholder-gray-400"
-                    />
-                  </label>
-                </div>
-              </>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="alert alert-error bg-red-500/20 border-red-500/50 text-red-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{error}</span>
-              </div>
-            )}
+          {/* Mobile Logo */}
+          <div className="lg:hidden mb-8 text-center">
+             <h1 className="text-2xl font-bold text-white tracking-wide font-mono">
+                DevConnect<span className="text-blue-500">.</span>
+             </h1>
           </div>
 
-          {/* Submit Button */}
-          <div className="form-control mt-8">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-bold text-white tracking-tight">
+              {isLogin ? "Welcome back" : "Create account"}
+            </h2>
+            <p className="text-slate-400 text-sm">
+              {isLogin ? "Enter your credentials to access your workspace." : "Enter your details to get started."}
+            </p>
+          </div>
+
+          {/* Error Alert */}
+          {error && (
+            <div className="bg-red-500/10 border-l-2 border-red-500 rounded-r-md p-3">
+              <span className="text-xs text-red-200 font-medium">{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={isLogin ? loginHandler : signUpHandler} className="space-y-5">
+            
+            {!isLogin && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormInput label="First Name" placeholder="John" value={firstName} onChange={setFirstName} required={!isLogin} />
+                  <FormInput label="Last Name" placeholder="Doe" value={lastName} onChange={setLastName} />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <FormInput label="Age" type="number" placeholder="25" value={age} onChange={setAge} required={!isLogin} />
+                  
+                  {/* Styled Select */}
+                  <div className="w-full">
+                    <label className="block mb-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                      Gender <span className="text-blue-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select 
+                        className="w-full bg-[#1e293b] border border-slate-700 text-slate-200 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition-all appearance-none cursor-pointer hover:border-slate-600"
+                        required={!isLogin}
+                        value={gender} 
+                        onChange={(e) => setGender(e.target.value)}
+                      >
+                        <option value="" disabled>Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="trans">Trans</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <FormInput label="Email" type="email" placeholder="name@company.com" value={email} onChange={setEmail} required />
+            
+            <div>
+              <FormInput 
+                 label="Password" 
+                 type="password" 
+                 placeholder="••••••••" 
+                 value={password} 
+                 onChange={setPassword} 
+                 required 
+              />
+            </div>
+
+            {!isLogin && (
+              <FormInput 
+                label="Skills" 
+                placeholder="React, Node.js, AWS" 
+                value={skills} 
+                onChange={setSkills} 
+                required={!isLogin} 
+              />
+            )}
+
             <button 
-              className={`btn btn-primary btn-lg text-white font-semibold transition-all duration-200 ${
-                isLogin ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700'
-              } border-none shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`}
-              onClick={isLogin ? loginHandler : signUpHandler}
+              type="submit"
+              className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-900/50 font-medium rounded-md text-sm px-5 py-3 text-center transition-all duration-200 mt-6 shadow-lg shadow-blue-500/20"
             >
               {isLogin ? "Sign In" : "Create Account"}
             </button>
-          </div>
+          </form>
 
-          {/* Toggle between Login and Signup */}
-          <div className="divider my-6"></div>
-          <div className="text-center">
-            <p className="text-gray-400">
-              {isLogin ? "New to DevTinder? " : "Already have an account? "}
+          <div className="pt-4 text-center">
+            <p className="text-sm text-slate-500">
+              {isLogin ? "New here? " : "Already have an account? "}
               <button 
                 type="button"
-                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-200 hover:underline"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError(""); // Clear errors when switching
-                  // Clear form fields when switching
-                  if (!isLogin) {
-                    setFirstName("");
-                    setLastName("");
-                    setAge("");
-                    setGender("");
-                    setSkills("");
-                  }
-                  setEmail("");
-                  setPassword("");
-                }}
+                className="font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                onClick={handleSwitch}
               >
-                {isLogin ? "Create an account" : "Sign in instead"}
+                {isLogin ? "Create account" : "Sign in"}
               </button>
             </p>
           </div>
@@ -329,5 +206,22 @@ const Login = () => {
     </div>
   )
 }
+
+// Reusable Input Component - Refined for precision
+const FormInput = ({ label, type = "text", placeholder, value, onChange, required }) => (
+  <div className="w-full">
+    <label className="block mb-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+      {label} {required && <span className="text-blue-500">*</span>}
+    </label>
+    <input 
+      type={type} 
+      className="bg-[#1e293b] border border-slate-700 text-slate-200 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-3 outline-none transition-all placeholder-slate-600 hover:border-slate-600 focus:bg-[#1e293b]" 
+      placeholder={placeholder} 
+      required={required} 
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  </div>
+);
 
 export default Login
